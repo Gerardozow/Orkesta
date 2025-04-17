@@ -1,0 +1,105 @@
+/* assets/css/andon.css - Estilos para Andon tipo Aeropuerto */
+body.andon-body {
+    background-color: #212529;
+    /* Fondo oscuro */
+    color: #f8f9fa;
+    /* Texto claro */
+    font-family: 'Inter', sans-serif;
+    /* Usar la misma fuente */
+    overflow-y: hidden;
+    /* Evitar scroll vertical si es posible */
+}
+
+.andon-title {
+    color: #ffc107;
+    /* Color amarillo para título */
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+#andon-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.8rem;
+    /* Tamaño base grande para tabla */
+    margin-bottom: 0;
+    /* Quitar margen inferior */
+}
+
+#andon-table thead th {
+    background-color: #343a40;
+    /* Encabezado más oscuro */
+    color: #adb5bd;
+    /* Texto cabecera grisáceo */
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid #495057;
+    font-size: 0.8em;
+    /* Encabezado ligeramente más pequeño */
+    text-transform: uppercase;
+}
+
+#andon-table tbody tr {
+    border-bottom: 1px solid #495057;
+    /* Línea divisoria entre filas */
+}
+
+/* Evitar borde en la última fila */
+#andon-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+
+#andon-table tbody td {
+    padding: 1rem 1rem;
+    /* Espaciado generoso */
+    vertical-align: middle;
+    /* Alinear verticalmente al medio */
+}
+
+/* Estilos específicos por columna */
+#andon-table .col-wo {
+    font-weight: bold;
+    width: 15%;
+    /* Ajustar anchos */
+}
+
+#andon-table .col-np {
+    width: 20%;
+    font-size: 0.9em;
+    color: #adb5bd;
+}
+
+#andon-table .col-desc {
+    width: 45%;
+    font-size: 0.9em;
+}
+
+#andon-table .col-status {
+    width: 20%;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.2em;
+    text-transform: uppercase;
+}
+
+/* Colores de Estado */
+.status-parcial {
+    color: #ffc107;
+    /* Amarillo/Naranja */
+    /* background-color: rgba(255, 193, 7, 0.1); Borde sutil o fondo si se quiere */
+}
+
+.status-completo {
+    color: #198754;
+    /* Verde */
+    /* background-color: rgba(25, 135, 84, 0.1); */
+}
+
+/* Loader */
+#andon-loader {
+    padding: 3rem;
+    text-align: center;
+    color: #6c757d;
+    font-size: 1.5rem;
+}

@@ -1,0 +1,18 @@
+.alert {
+    /* Puedes ajustar estos valores si usas una versión diferente de Bootstrap o quieres otro padding */
+    padding: 1rem 1rem;
+}
+
+/* Estilos para botones de acción en tablas (ej. mis_pickeos.php) */
+
+@media (max-width: 576px) {
+    .btn-group .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+    }
+
+    .btn-group i.feather {
+        width: 1.5em;
+        height: 1.5em;
+    }
+}
