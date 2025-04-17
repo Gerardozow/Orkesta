@@ -24,6 +24,7 @@ $mostrar_tabla_pickeos_activos = false; // Flag específico para la tabla de pic
 $count_pendientes = 0;
 $count_en_proceso = 0;
 $count_en_espera = 0;
+$count_parciales = 0;
 $count_entregadas_hoy = 0;
 // Las listas para las tablas se cargan vía AJAX
 
@@ -37,6 +38,7 @@ if (function_exists('tiene_algun_rol') && tiene_algun_rol(['Admin', 'Supervisor 
     if (function_exists('contar_wos_en_proceso_pickeo')) $count_en_proceso = contar_wos_en_proceso_pickeo();
     if (function_exists('contar_wos_en_espera_entrega')) $count_en_espera = contar_wos_en_espera_entrega();
     if (function_exists('contar_wos_entregadas_hoy')) $count_entregadas_hoy = contar_wos_entregadas_hoy();
+    if (function_exists('contar_wos_parciales')) $count_parciales = contar_wos_parciales(); // Para la tarjeta de parciales
 }
 // Verificar si mostrar tabla de pickeos activos
 if (function_exists('tiene_algun_rol') && tiene_algun_rol(['Admin', 'Supervisor Almacen', 'Usuario Almacen'])) {
@@ -68,7 +70,7 @@ include_once('layouts/header.php');
                     <div class="col-lg-3 col-md-6 col-sm-6 mb-4"> <?php include_once('layouts/components/cards/card_pendientes_pickeo.php'); ?> </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 mb-4"> <?php include_once('layouts/components/cards/card_en_proceso_pickeo.php'); ?> </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 mb-4"> <?php include_once('layouts/components/cards/card_en_espera_entrega.php'); ?> </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 mb-4"> <?php include_once('layouts/components/cards/card_entregadas_hoy.php'); ?> </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 mb-4"> <?php include_once('layouts/components/cards/card_parciales.php'); ?> </div>
                 </div><?php endif; ?>
             <?php if ($mostrar_tabla_pickeos_activos): ?>
                 <div class="row mt-0">
@@ -604,17 +606,15 @@ include_once('layouts/header.php');
                             $('#count-pendientes').text(formatNumber(data.pendientes));
                             $('#count-en-proceso').text(formatNumber(data.en_proceso));
                             $('#count-en-espera').text(formatNumber(data.en_espera));
-                            $('#count-entregadas-hoy').text(formatNumber(data.entregadas_hoy));
-                            // Actualizar también el número pequeño en la tarjeta "Entregadas Hoy"
-                            $('#count-entregadas-hoy').closest('.card-body').find('.mb-0 .text-success').html(`<i class="mdi mdi-arrow-up"></i> ${formatNumber(data.entregadas_hoy)}`);
+                            $('#count-parciales').text(formatNumber(data.parciales));
 
                             // Opcional: Añadir un efecto visual sutil al actualizar
-                            // $('#count-pendientes, #count-en-proceso, #count-en-espera, #count-entregadas-hoy')
-                            //   .addClass('animate__animated animate__flash animate__faster');
-                            // setTimeout(() => {
-                            //    $('#count-pendientes, #count-en-proceso, #count-en-espera, #count-entregadas-hoy')
-                            //      .removeClass('animate__animated animate__flash animate__faster');
-                            // }, 500); // Requiere Animate.css
+                            $('#count-pendientes, #count-en-proceso, #count-en-espera, #count-parciales')
+                                .addClass('animate__animated animate__flash animate__faster');
+                            setTimeout(() => {
+                                $('#count-pendientes, #count-en-proceso, #count-en-espera, #count-parciales')
+                                    .removeClass('animate__animated animate__flash animate__faster');
+                            }, 500); // Requiere Animate.css
 
                         } else {
                             console.warn("No se pudieron actualizar los contadores: ", data.message || "Permiso denegado o error del servidor.");

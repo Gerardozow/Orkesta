@@ -22,7 +22,7 @@ if (!esta_logueado() || !tiene_algun_rol(['Admin', 'Supervisor Almacen', 'Usuari
         'pendientes' => 0,
         'en_proceso' => 0,
         'en_espera' => 0,
-        'entregadas_hoy' => 0
+        'parciales' => 0
     ]);
 }
 
@@ -32,7 +32,7 @@ $counts = [
     'pendientes' => function_exists('contar_wos_pendientes_pickeo') ? contar_wos_pendientes_pickeo() : 0,
     'en_proceso' => function_exists('contar_wos_en_proceso_pickeo') ? contar_wos_en_proceso_pickeo() : 0,
     'en_espera' => function_exists('contar_wos_en_espera_entrega') ? contar_wos_en_espera_entrega() : 0,
-    'entregadas_hoy' => function_exists('contar_wos_entregadas_hoy') ? contar_wos_entregadas_hoy() : 0
+    'parciales' => function_exists('contar_wos_parciales') ? contar_wos_parciales() : 0
 ];
 
 // Enviar respuesta JSON
