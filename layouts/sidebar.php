@@ -12,7 +12,8 @@ $es_admin = (function_exists('tiene_rol') && tiene_rol('Admin'));
 <nav id="sidebar" class="sidebar js-sidebar">
     <div class="sidebar-content js-simplebar">
         <a class="sidebar-brand" href="<?php echo (defined('BASE_URL') ? BASE_URL : '/'); ?>index.php">
-            <span class="align-middle">WorkOrders</span>
+
+            <img class="w-100" src="<?php echo (defined('BASE_URL') ? BASE_URL : '/'); ?>assets/img/logo.png" alt="Logo" class="logo">
         </a>
 
         <ul class="sidebar-nav">

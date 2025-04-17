@@ -12,7 +12,7 @@ $directorioPadre = dirname(__DIR__);
 // -----------------------------------------------------------------------
 defined('SITE_ROOT') ? null : define('SITE_ROOT', realpath(dirname(__FILE__)));
 define("LIB_PATH_INC", SITE_ROOT . DS);
-define('BASE_URL', '/franke/'); // o '/' si está en raíz
+define('BASE_URL', '/orkesta/'); // o '/' si está en raíz
 
 
 require_once(LIB_PATH_INC . 'db.php');
