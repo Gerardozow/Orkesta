@@ -15,7 +15,7 @@ if (!defined('BASE_URL')) {
     <meta name="keywords" content="ordenes de trabajo, almacen, produccion, dashboard, bootstrap 5">
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="shortcut icon" href="<?php echo BASE_URL; ?>assets/img/icons/icon-48x48.png" />
+    <link rel="shortcut icon" href="<?php echo BASE_URL; ?>assets/img/favicon.png" />
 
     <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'Portal de Órdenes'; ?> </title>
 

@@ -894,6 +894,30 @@ function contar_wos_en_espera_entrega()
     }
 }
 
+/**
+ * Cuenta las WOs que están Aprobadas, con pickeo Completo o En Proceso, 
+ * y pendientes de ser entregadas. (Área de Espera)
+ * @return int El número de WOs en espera de entrega.
+ */
+function contar_wos_parciales()
+{
+    global $db;
+    $sql = "SELECT COUNT(workorder) as total 
+            FROM workorder_status 
+            WHERE estado_aprobacion_almacen = 'APROBADA' 
+              AND estado_pickeo IN ('PARCIAL')
+              AND estado_entrega = 'PENDIENTE'";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return (int)($result['total'] ?? 0);
+    } catch (\PDOException $e) {
+        error_log("Error en contar_wos_parciales: " . $e->getMessage());
+        return 0;
+    }
+}
+
 
 /**
  * Busca WOs APROBADAS, NO ENTREGADAS y con PICKEO PENDIENTE o EN PROCESO.
