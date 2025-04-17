@@ -777,13 +777,14 @@ function buscar_wos_para_gestion_asignacion()
             WHERE 
                 ws.requiere_pickeo = 1                 -- Solo las que requieren pickeo
                 AND ws.estado_aprobacion_almacen = 'APROBADA'  -- Deben estar aprobadas
-                AND ws.estado_pickeo IN ('PENDIENTE', 'EN_PROCESO') -- Pickeo pendiente o en proceso
+                AND ws.estado_pickeo IN ('PENDIENTE', 'EN_PROCESO','PARCIAL') -- Pickeo pendiente o en proceso
                 AND ws.estado_entrega = 'PENDIENTE'          -- No deben estar entregadas
             ORDER BY 
-                CASE ws.estado_pickeo                    -- Ordenar: Pendientes primero, luego por fecha
-                    WHEN 'PENDIENTE' THEN 1
-                    WHEN 'EN_PROCESO' THEN 2
-                    ELSE 3
+                CASE ws.estado_pickeo       
+                    WHEN 'PARCIAL' THEN 1             -- Ordenar: Pendientes primero, luego por fecha
+                    WHEN 'PENDIENTE' THEN 2
+                    WHEN 'EN_PROCESO' THEN 3
+                    ELSE 4
                 END ASC,
                 ws.fecha_estado_actualizacion ASC";
 
@@ -890,30 +891,6 @@ function contar_wos_en_espera_entrega()
         return (int)($result['total'] ?? 0);
     } catch (\PDOException $e) {
         error_log("Error en contar_wos_en_espera_entrega: " . $e->getMessage());
-        return 0;
-    }
-}
-
-/**
- * Cuenta las WOs que están Aprobadas, con pickeo Completo o En Proceso, 
- * y pendientes de ser entregadas. (Área de Espera)
- * @return int El número de WOs en espera de entrega.
- */
-function contar_wos_parciales()
-{
-    global $db;
-    $sql = "SELECT COUNT(workorder) as total 
-            FROM workorder_status 
-            WHERE estado_aprobacion_almacen = 'APROBADA' 
-              AND estado_pickeo IN ('PARCIAL')
-              AND estado_entrega = 'PENDIENTE'";
-    try {
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        return (int)($result['total'] ?? 0);
-    } catch (\PDOException $e) {
-        error_log("Error en contar_wos_parciales: " . $e->getMessage());
         return 0;
     }
 }
@@ -1211,6 +1188,31 @@ function contar_wos_pickeo_completo_aprobadas()
         $result = $stmt->fetch();
         return (int)($result['total'] ?? 0);
     } catch (\PDOException $e) { /* Log error */
+        return 0;
+    }
+}
+
+
+/**
+ * Cuenta las WOs que están Aprobadas, con pickeo Completo o En Proceso, 
+ * y pendientes de ser entregadas. (Área de Espera)
+ * @return int El número de WOs en espera de entrega.
+ */
+function contar_wos_parciales()
+{
+    global $db;
+    $sql = "SELECT COUNT(workorder) as total 
+            FROM workorder_status 
+            WHERE estado_aprobacion_almacen = 'APROBADA' 
+              AND estado_pickeo IN ('PARCIAL')
+              AND estado_entrega = 'PENDIENTE'";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return (int)($result['total'] ?? 0);
+    } catch (\PDOException $e) {
+        error_log("Error en contar_wos_parciales: " . $e->getMessage());
         return 0;
     }
 }
