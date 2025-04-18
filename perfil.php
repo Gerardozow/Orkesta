@@ -296,7 +296,7 @@ include_once('layouts/header.php');
                             <?php // Mostrar Nombre y Rol 
                             ?>
                             <h5 class="card-title mb-0"><?php echo htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']); ?></h5>
-                            <div class="text-muted mb-2"><?php echo htmlspecialchars($usuario['rol'] ?? 'Rol no definido'); ?></div>
+                            <div class="text-muted mb-2"><?php echo htmlspecialchars($usuario['nombre_rol'] ?? 'Rol no definido'); ?></div>
 
                             <div>
                                 <?php // --- Formulario para Subir Nueva Foto --- 
@@ -363,16 +363,6 @@ include_once('layouts/header.php');
                                     <?php if (isset($validation_errors['email'])): ?>
                                         <div class="invalid-feedback"><?php echo $validation_errors['email']; ?></div>
                                     <?php endif; ?>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="info_rol">Rol</label>
-                                    <?php // Cambiamos $usuario['rol'] por $usuario['nombre_rol'] 
-                                    ?>
-                                    <?php // Usamos ?? 'Sin Rol' como respaldo 
-                                    ?>
-                                    <input type="text" class="form-control" id="info_rol"
-                                        value="<?php echo htmlspecialchars($usuario['nombre_rol'] ?? 'Sin Rol'); ?>" readonly>
                                 </div>
 
                                 <div class="mb-3">
