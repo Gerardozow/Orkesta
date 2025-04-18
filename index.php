@@ -27,8 +27,9 @@ $count_en_espera = 0;
 $count_parciales = 0;
 $count_entregadas_hoy = 0;
 // Las listas para las tablas se cargan vía AJAX
-
+// Verificar los roles que tendran acceso a las tablas
 // Verificar si mostrar contenido de Almacén
+$roles_almacen = ['Admin', 'Supervisor Almacen', 'Usuario Almacen'];
 // Ajusta los roles si es necesario (ej. añadir Sup Prod para ver?)
 if (function_exists('tiene_algun_rol') && tiene_algun_rol(['Admin', 'Supervisor Almacen', 'Usuario Almacen', 'Supervisor Produccion'])) {
     $mostrar_seccion_almacen = true;
@@ -41,7 +42,7 @@ if (function_exists('tiene_algun_rol') && tiene_algun_rol(['Admin', 'Supervisor 
     if (function_exists('contar_wos_parciales')) $count_parciales = contar_wos_parciales(); // Para la tarjeta de parciales
 }
 // Verificar si mostrar tabla de pickeos activos
-if (function_exists('tiene_algun_rol') && tiene_algun_rol(['Admin', 'Supervisor Almacen', 'Usuario Almacen'])) {
+if (function_exists('tiene_algun_rol') && tiene_algun_rol($roles_almacen)) {
     $mostrar_tabla_pickeos_activos = true;
 }
 
@@ -73,7 +74,7 @@ include_once('layouts/header.php');
                     <div class="col-lg-3 col-md-6 col-sm-6 mb-4"> <?php include_once('layouts/components/cards/card_parciales.php'); ?> </div>
                 </div><?php endif; ?>
             <?php if ($mostrar_tabla_pickeos_activos): ?>
-                <div class="row mt-0">
+                 <div class="row mt-0">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
@@ -108,7 +109,7 @@ include_once('layouts/header.php');
                 </div>
             <?php endif; // Fin if $mostrar_tabla_pickeos_activos 
             ?>
-            <?php if ($mostrar_seccion_almacen): ?>
+            <?php if (function_exists('tiene_algun_rol') && tiene_algun_rol($roles_almacen)): ?>
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">
@@ -298,38 +299,7 @@ include_once('layouts/header.php');
                     }
                 }
             });
-
-            // Inicializar/Mover Botones de Exportación para esta tabla
-            new $.fn.dataTable.Buttons(tableActivas, {
-                buttons: [{
-                        extend: 'excelHtml5',
-                        text: '<i class="align-middle" data-feather="file"></i> Excel',
-                        className: 'btn btn-success btn-sm ms-1',
-                        titleAttr: 'Excel'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: '<i class="align-middle" data-feather="file-text"></i> PDF',
-                        className: 'btn btn-danger btn-sm ms-1',
-                        titleAttr: 'PDF',
-                        orientation: 'landscape'
-                    },
-                    {
-                        extend: 'csvHtml5',
-                        text: '<i class="align-middle" data-feather="save"></i> CSV',
-                        className: 'btn btn-secondary btn-sm ms-1',
-                        titleAttr: 'CSV'
-                    }
-                ]
-            });
-            var buttonContainerActivas = tableActivas.buttons().container();
-            // Añadir botones al header de la tarjeta específica
-            buttonContainerActivas.appendTo($('#tabla-wos-activas').closest('.card').find('.card-header > div:last-child'));
-            buttonContainerActivas.find('.dt-buttons').addClass('btn-group flex-wrap');
-            buttonContainerActivas.find('.btn').removeClass('ms-1').addClass('m-1');
         }
-
-
         // --- Inicializar DataTable para WOs Pendientes de Entrega (CON AJAX) ---
         if ($('#tabla-wos-pend-entrega').length) {
             tablePendEntrega = $('#tabla-wos-pend-entrega').DataTable({
