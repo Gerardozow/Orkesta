@@ -14,7 +14,7 @@ $count = $count_parciales ?? 0;
                 </div>
             </div>
         </div>
-        <h1 class="mt-1 mb-3" id="count-entregadas-hoy"><?php echo number_format($count_parciales ?? 0); ?></h1>
+        <h1 class="mt-1 mb-3" id="count-parciales"><?php echo number_format($count_parciales ?? 0); ?></h1>
         <div class="mb-0">
             <span class="badge bg-warning ms-1">Workorders Parciales</span>
         </div>
