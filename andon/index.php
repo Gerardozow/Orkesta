@@ -1,5 +1,5 @@
 <?php
-// andon/andon_pick_status.php - Vista pública AJAX para pantalla Andon de Pickeo (Estilo Lista)
+// andon/index.php - Vista pública AJAX para pantalla Andon de Pickeo (Estilo Lista)
 // Fecha de última revisión: 16 de Abril de 2025
 
 require_once('../includes/load.php');
