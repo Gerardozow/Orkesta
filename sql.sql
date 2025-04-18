@@ -70,12 +70,6 @@ CREATE TABLE `usuarios` (
   `fecha_actualizacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `usuarios` (`id`, `username`, `password`, `email`, `nombre`, `apellido`, `id_rol`, `activo`, `foto_perfil`, `ultimo_login`, `fecha_creacion`, `fecha_actualizacion`) VALUES
-(1, 'admin', '$2y$10$rUWergXHmUwg8ZbejX6t9u1YDJJwrr8IvBR5NzXWSNsdnwRiEkDty', 'gerardo.reyes@franke.com', 'Gerardo', 'Reyes', 1, 1, 'user_3_1744608381.jpg', NULL, '2025-04-14 03:53:46', '2025-04-14 05:30:48'),
-(4, 'Gerardo', '$2y$10$HUhTbHK2GDtcNq4EmjKn1OUKEk4T.by6zx33GK3uQ54YUBm5pway.', NULL, 'Gerardo', 'Reyes', 5, 1, NULL, NULL, '2025-04-14 04:41:49', '2025-04-14 06:16:06'),
-(5, 'almacen', '$2y$10$Pp1mJdhx.fxBiTFbJkYCdONzlj2b3vep2loSCaT9AEu8n5GRFNYH2', NULL, 'Almacen', '1', 3, 0, NULL, NULL, '2025-04-15 00:05:44', '2025-04-15 00:05:44'),
-(6, 'Moi', '$2y$10$v1qzPCcDmKoDWL0tlMWeieSoYjJT8x0RZZJ3opek3GxTmJhoAWtL.', NULL, 'Moises', 'Armenta', 3, 1, NULL, NULL, '2025-04-15 02:53:16', '2025-04-15 02:53:24'),
-(7, 'Ana', '$2y$10$wu4WaK1RB2aL.tZQCD66NONKiraU6Mfs3MEQaEiCN.y4Tf6nJHRDi', NULL, 'Ana', 'Leija', 2, 1, NULL, NULL, '2025-04-15 04:07:23', '2025-04-15 04:07:32');
 
 CREATE TABLE `workorders` (
   `workorder` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
