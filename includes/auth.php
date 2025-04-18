@@ -82,7 +82,7 @@ function requerir_login()
     if (!esta_logueado()) {
         if (function_exists('redirigir_a')) {
             global $BASE_URL;
-            $login_page = ($BASE_URL ?? '/franke/') . 'login.php'; // Usar BASE_URL si está definida
+            $login_page = ($BASE_URL ?? '/orkesta/') . 'login.php'; // Usar BASE_URL si está definida
             redirigir_a($login_page);
         } else {
             // Fallback si redirigir_a no existe

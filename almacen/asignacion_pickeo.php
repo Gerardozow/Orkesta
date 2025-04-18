@@ -102,13 +102,19 @@ FROM workorder_status WHERE workorder = :wo LIMIT 1";
                     }
                 }
             }
-            // --- Acción: Reasignar Pickeo (cuando estaba EN_PROCESO) ---
+            // --- Acción: Reasignar Pickeo (cuando estaba EN_PROCESO o PARCIAL) ---
             elseif ($form_action === 'reasignar_pickeo') {
                 $tipo_historial = 'REASIGNACION_PICKEO';
                 $usuario_asignado_actual_id = $estado_wo_actual['id_usuario_asignado'];
+
                 // Validar estado y selección
-                if ($estado_wo_actual['estado_pickeo'] !== 'EN_PROCESO' || $usuario_asignado_actual_id === null) {
-                    mensaje_sesion("Solo reasignar WOs EN PROCESO y ya asignadas.", "warning");
+                // MODIFICADO: Permitir EN_PROCESO o PARCIAL
+                if (
+                    ($estado_wo_actual['estado_pickeo'] !== 'EN_PROCESO' && $estado_wo_actual['estado_pickeo'] !== 'PARCIAL') // El estado NO es EN_PROCESO Y NO es PARCIAL
+                    || $usuario_asignado_actual_id === null // O no hay usuario asignado
+                ) {
+                    // MODIFICADO: Mensaje actualizado
+                    mensaje_sesion("Solo reasignar WOs EN PROCESO o PARCIAL y ya asignadas.", "warning");
                     $should_redirect = false;
                 } elseif (empty($nuevo_usuario_id)) {
                     mensaje_sesion("No se seleccionó nuevo usuario.", "warning");
@@ -223,14 +229,41 @@ include_once('../layouts/header.php');
                                             <td><?php echo htmlspecialchars($wo['workorder']); ?></td>
                                             <td><?php echo htmlspecialchars($wo['numero_parte'] ?? '-'); ?></td>
                                             <td><?php echo htmlspecialchars($wo['descripcion'] ?? '-'); ?></td>
-                                            <td><?php // Badge Pickeo 
-                                                ?>
+                                            <td>
+
                                                 <?php
+                                                // Obtener el estado, si no existe o es null, usar 'PENDIENTE' por defecto
                                                 $pick_status = $wo['estado_pickeo'] ?? 'PENDIENTE';
-                                                $pick_badge_class = ($pick_status === 'EN_PROCESO') ? 'primary' : 'secondary';
-                                                $pick_text = ($pick_status === 'EN_PROCESO') ? 'En Proceso' : 'Pendiente';
+
+                                                // Determinar la clase del badge y el texto según el estado
+                                                $pick_badge_class = ''; // Inicializar variable
+                                                $pick_text = '';        // Inicializar variable
+
+                                                switch ($pick_status) {
+                                                    case 'EN_PROCESO':
+                                                        $pick_badge_class = 'primary'; // Clase para "En Proceso" (Bootstrap: azul)
+                                                        $pick_text = 'En Proceso';
+                                                        break;
+
+                                                    case 'PARCIAL':
+                                                        $pick_badge_class = 'warning'; // Clase para "Parcial" (Bootstrap: amarillo/naranja) - Puedes cambiarla si prefieres (ej. 'info' - azul claro)
+                                                        $pick_text = 'Parcial';
+                                                        break;
+
+                                                    case 'COMPLETADO': // Ejemplo: si tuvieras un estado 'COMPLETADO'
+                                                        $pick_badge_class = 'success'; // Clase para "Completado" (Bootstrap: verde)
+                                                        $pick_text = 'Completado';
+                                                        break;
+
+                                                    // Puedes añadir más casos para otros estados específicos aquí
+
+                                                    default: // Para 'PENDIENTE' y cualquier otro estado no especificado
+                                                        $pick_badge_class = 'secondary'; // Clase por defecto (Bootstrap: gris)
+                                                        $pick_text = 'Pendiente';
+                                                        break; // break es opcional en default si es el último, pero es buena práctica
+                                                }
                                                 ?>
-                                                <span class="badge bg-<?php echo $pick_badge_class; ?>"><?php echo $pick_text; ?></span>
+                                                <span class="badge bg-<?php echo $pick_badge_class; ?>"><?php echo htmlspecialchars($pick_text); ?></span>
                                             </td>
                                             <td><?php echo htmlspecialchars($wo['nombre_usuario_asignado'] ?? 'Sin Asignar'); ?></td>
                                             <td><?php echo htmlspecialchars(function_exists('formatear_fecha') ? formatear_fecha($wo['fecha_estado_actualizacion'], 'd/m/Y H:i') : ($wo['fecha_estado_actualizacion'] ?? '-')); ?></td>
@@ -245,6 +278,15 @@ include_once('../layouts/header.php');
                                                         <i class="align-middle" data-feather="user-plus"></i> Asignar
                                                     </button>
                                                 <?php elseif ($wo['estado_pickeo'] === 'EN_PROCESO' && !empty($wo['id_usuario_asignado'])): ?>
+                                                    <?php // Botón REASIGNAR (dispara JS) 
+                                                    ?>
+                                                    <button type="button" class="btn btn-purple btn-sm btn-reasignar"
+                                                        title="Reasignar Pickeo"
+                                                        data-wo="<?php echo htmlspecialchars($wo['workorder']); ?>"
+                                                        data-current-assignee-id="<?php echo (int)$wo['id_usuario_asignado']; ?>">
+                                                        <i class="align-middle" data-feather="users"></i> Reasignar
+                                                    </button>
+                                                <?php elseif ($wo['estado_pickeo'] === 'PARCIAL' && !empty($wo['id_usuario_asignado'])): ?>
                                                     <?php // Botón REASIGNAR (dispara JS) 
                                                     ?>
                                                     <button type="button" class="btn btn-purple btn-sm btn-reasignar"

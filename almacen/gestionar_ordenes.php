@@ -20,14 +20,6 @@ if (!function_exists('tiene_algun_rol') || !tiene_algun_rol(['Admin', 'Superviso
 }
 // --- Fin Permisos ---
 
-// --- Obtener lista de usuarios (necesaria por si reactivamos reasignación en JS) ---
-$lista_usuarios_asignables = [];
-if (function_exists('buscar_usuarios_para_asignacion')) {
-    $lista_usuarios_asignables = buscar_usuarios_para_asignacion();
-} else {
-    error_log("Error: Función buscar_usuarios_para_asignacion() no encontrada.");
-}
-
 // --- Variables de Plantilla ---
 $page_title = 'Gestionar Work Orders (Aprobación)';
 $active_page = 'almacen';
@@ -90,37 +82,13 @@ include_once('../layouts/header.php');
 
     <?php include_once('../layouts/footer.php'); // Footer carga librerías JS globales 
     ?>
-</div> <?php // --- Scripts JS --- 
-        ?>
-<script>
-    // Fallbacks por si librerías no cargan desde footer
-    if (typeof jQuery == 'undefined') {
-        document.write('<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>');
-    }
-    if (typeof Swal == 'undefined') {
-        console.error("SweetAlert2 no cargado."); /* Carga opcional */
-    }
-    if (typeof $.fn.dataTable == 'undefined') {
-        console.error("DataTables no cargado."); /* Carga opcional */
-    }
-</script>
+</div>
 
 <script>
     $(document).ready(function() {
 
         var table = null; // Variable para la tabla DataTables
 
-        // Pasar lista de usuarios PHP a JavaScript (útil si reactivamos reasignar)
-        const usuariosAsignables = <?php echo json_encode($lista_usuarios_asignables ?? []); ?>;
-        const opcionesUsuariosSwal = {};
-        if (usuariosAsignables.length > 0) {
-            opcionesUsuariosSwal[''] = 'Selecciona un usuario...';
-            usuariosAsignables.forEach(user => {
-                opcionesUsuariosSwal[user.id] = user.nombre_completo;
-            });
-        } else {
-            opcionesUsuariosSwal[''] = 'No hay usuarios disponibles';
-        }
 
 
         // --- Inicializar DataTable para Gestión WO (CON AJAX) ---
@@ -158,19 +126,34 @@ include_once('../layouts/header.php');
                     {
                         data: 'estado_pickeo',
                         render: function(data, type, row) {
+                            // Establecer estado por defecto a 'PENDIENTE' si no hay dato
                             let status = data || 'PENDIENTE';
+
+                            // Valores por defecto para el badge (estado PENDIENTE)
                             let p_badge = 'secondary';
                             let p_text = 'Pendiente';
+
+                            // Asignar clase y texto según el estado específico
                             if (status === 'EN_PROCESO') {
                                 p_badge = 'primary';
                                 p_text = 'En Proceso';
+                            } else if (status === 'PARCIAL') {
+                                p_badge = 'warning'; // Badge amarillo/naranja para Parcial
+                                p_text = 'Parcial';
                             } else if (status === 'COMPLETO') {
                                 p_badge = 'success';
                                 p_text = 'Completo';
                             }
+                            // Si no coincide con ninguno, usa los valores por defecto
+
+                            // Construir el HTML del badge
                             let badge = `<span class="badge bg-${p_badge}">${p_text}</span>`;
-                            // Necesitamos 'tiene_comentario_progreso' en la data AJAX para mostrar icono
-                            // if (status === 'EN_PROCESO' && (row.tiene_comentario_progreso == 1)) { badge += ' <i data-feather="message-square"...></i>'; }
+
+                            // Añadir icono si está en proceso y tiene comentario de progreso
+                            if (status === 'EN_PROCESO' && (row.tiene_comentario_progreso == 1)) {
+                                badge += ' <i data-feather="message-square" title="Tiene comentario de progreso"></i>';
+                            }
+
                             return badge;
                         }
                     },
@@ -206,21 +189,37 @@ include_once('../layouts/header.php');
                         }
                     },
                     {
-                        data: 'workorder', // Columna Acción (Solo Aprobar)
+                        data: 'workorder', // Columna Acción (Aprobar/Restablecer)
                         orderable: false,
-                        className: 'text-center',
+                        className: 'text-center dt-nowrap',
                         render: function(data, type, row) {
-                            // Replicar lógica PHP para mostrar botón Aprobar basado en datos de 'row'
-                            // Necesitamos estado_aprobacion_almacen en los datos AJAX
-                            if ((row.estado_aprobacion_almacen || 'PENDIENTE') === 'PENDIENTE') {
-                                let wo_escaped = $('<div>').text(data).html();
-                                return `<form class="d-inline needs-confirmation" data-confirm-message="¿APROBAR la WO ${wo_escaped}?">
-                                            <input type="hidden" name="form_action" value="aprobar_wo">
-                                            <input type="hidden" name="workorder" value="${wo_escaped}">
-                                            <button type="submit" class="btn btn-success btn-sm" title="Aprobar WO"><i class="align-middle" data-feather="check-circle"></i></button>
-                                        </form>`;
+                            // Escapar el número de WO para usarlo de forma segura en HTML
+                            let wo_escaped = $('<div>').text(data).html();
+                            // Obtener el estado de aprobación, default a 'PENDIENTE' si no existe
+                            let estadoAprobacion = row.estado_aprobacion_almacen || 'PENDIENTE';
+
+                            // --- Lógica Condicional para los Botones ---
+                            if (estadoAprobacion === 'PENDIENTE') {
+                                // Si está PENDIENTE, mostrar botón para APROBAR
+                                return `<form class="d-inline needs-confirmation" action="../ajax/workorder_actions.php" method="POST" data-confirm-message="¿APROBAR la WO ${wo_escaped}?">
+                        <input type="hidden" name="form_action" value="aprobar_wo">
+                        <input type="hidden" name="workorder" value="${wo_escaped}">
+                        <button type="submit" class="btn btn-success btn-sm" title="Aprobar WO">
+                            <i class="align-middle" data-feather="check-circle"></i>
+                        </button>
+                    </form>`;
+                            } else if (estadoAprobacion === 'APROBADA') {
+                                // Si está APROBADA, mostrar botón para RESTABLECER
+                                return `<form class="d-inline needs-confirmation" action="../ajax/workorder_actions.php" method="POST" data-confirm-message="¿RESTABLECER la WO ${wo_escaped}? ¡Esto revertirá la aprobación y el estado de pickeo!">
+                        <input type="hidden" name="form_action" value="resetear_wo">
+                        <input type="hidden" name="workorder" value="${wo_escaped}">
+                        <button type="submit" class="btn btn-warning btn-sm" title="Restablecer WO">
+                            <i class="align-middle" data-feather="refresh-cw"></i> 
+                        </button>
+                    </form>`;
                             } else {
-                                return '<span class="text-muted small">-</span>';
+                                // Para cualquier otro estado
+                                return '<span class="text-muted small">-</span>'; // Mostrar un guión
                             }
                         }
                     },
