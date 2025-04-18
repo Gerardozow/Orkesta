@@ -27,15 +27,12 @@ $page_title = 'Andon - Estado Pickeo';
         <h1 class="display-5 text-center andon-title">
             <?php echo htmlspecialchars($page_title); ?>
         </h1>
-        <div class="row" id="andon-content">
-
-            <!-- Columnas de Completas -->
+         <div class="row" id="andon-content">
+            <div id="andon-loader" class="andon-loader">Cargando datos...</div>
             <div class="col-md-4" id="andon-column-completa-1"></div>
             <div class="col-md-4" id="andon-column-completa-2"></div>
-
-            <!-- Columna de Parciales -->
             <div class="col-md-4" id="andon-column-parcial">
-                    <td colspan="4">
+                   
                         <div id="andon-loader" class="andon-loader">Cargando datos...</div>
                     </td>
                 </tr>
@@ -102,40 +99,52 @@ $page_title = 'Andon - Estado Pickeo';
          */
         function actualizarAndon() {
             const url = '../ajax/get_andon_data.php'; // Ruta al script PHP
-            const andonTableBody = document.getElementById('andon-table-body');
-            const loaderRow = `<tr><td colspan="4"><div class="andon-loader">Actualizando...</div></td></tr>`; // Loader para refresco
-            // Mostrar loader temporalmente mientras se actualiza
-            if (andonTableBody) andonTableBody.innerHTML = loaderRow;
-
+            const andonContent = document.getElementById('andon-content');
+            const completa1 = document.getElementById('andon-column-completa-1');
+            const completa2 = document.getElementById('andon-column-completa-2');
+            const parcial = document.getElementById('andon-column-parcial');
+             // Limpiar las columnas antes de agregar nuevos datos
+            completa1.innerHTML = '';
+            completa2.innerHTML = '';
+            parcial.innerHTML = '';
+             // Mostrar loader
+             andonContent.innerHTML = '<div id="andon-loader" class="andon-loader">Cargando datos...</div>';
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
-                })
+            })
                 .then(data => {
-                    if (data.success && Array.isArray(data.data)) {
-                        // Limpiar tabla
-                        if (andonTableBody) andonTableBody.innerHTML = '';
+                        // Ocultar el loader
+                        document.getElementById('andon-loader')?.remove();
 
-                        // Llenar con nuevas filas
-                        if (data.data.length > 0) {
-                            data.data.forEach(wo => {
-                                if (andonTableBody) andonTableBody.innerHTML += crearFilaAndon(wo);
-                            });
-                        } else {
-                            // Mensaje si no hay WOs en estado Parcial o Completo
-                            if (andonTableBody) andonTableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">No hay Work Orders con pickeo Parcial o Completo pendientes de entrega.</td></tr>';
+                        if (data.success && Array.isArray(data.data)) {
+                        if (data.data.length === 0) {
+                            andonContent.innerHTML = '<div class="text-center p-4">No hay Work Orders con pickeo Parcial o Completo pendientes de entrega.</div>';
+                            return; // Salir temprano si no hay datos
                         }
-
-                        // Reemplazar iconos Feather si se usaran
-                        // if (typeof feather !== 'undefined') { feather.replace(); }
-
-                    } else {
-                        console.error("Error recibido del servidor Andon:", data.error || "Respuesta no exitosa");
-                        if (andonTableBody) andonTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger p-4">Error al cargar datos.</td></tr>';
-                    }
+                        let completa1Count = 0;
+                        let completa2Count = 0;
+                        data.data.forEach(wo => {
+                            const fila = crearFilaAndon(wo);
+                            if (wo.estado_pickeo === 'COMPLETO') {
+                                if (completa1Count <= completa2Count) {
+                                    completa1.innerHTML += fila;
+                                    completa1Count++;
+                                } else {
+                                    completa2.innerHTML += fila;
+                                    completa2Count++;
+                                }
+                            } else if (wo.estado_pickeo === 'PARCIAL') {
+                                parcial.innerHTML += fila;
+                            }
+                            });
+                            }else {
+                                console.error("Error recibido del servidor Andon:", data.error || "Respuesta no exitosa");
+                                andonContent.innerHTML = '<div class="text-center text-danger p-4">Error al cargar datos.</div>';
+                        }
                 })
                 .catch(error => {
                     console.error('Error en fetch para Andon:', error);
@@ -146,6 +155,7 @@ $page_title = 'Andon - Estado Pickeo';
         // --- Ejecución al cargar y periódica ---
         document.addEventListener('DOMContentLoaded', function() {
             actualizarAndon(); // Cargar datos inmediatamente
+            
             setInterval(actualizarAndon, 5000); // Actualizar cada 5 segundos
         });
     </script>
