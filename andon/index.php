@@ -23,21 +23,18 @@ $page_title = 'Andon - Estado Pickeo';
 </head>
 
 <body class="andon-body">
-
     <div class="container-fluid p-3">
-        <h1 class="display-5 text-center andon-title"><?php echo htmlspecialchars($page_title); ?></h1>
+        <h1 class="display-5 text-center andon-title">
+            <?php echo htmlspecialchars($page_title); ?>
+        </h1>
+        <div class="row" id="andon-content">
 
-        <table id="andon-table">
-            <thead>
-                <tr>
-                    <th class="col-wo">Work Order</th>
-                    <th class="col-np">Num. Parte</th>
-                    <th class="col-desc">Descripción</th>
-                    <th class="col-status">Estado Pickeo</th>
-                </tr>
-            </thead>
-            <tbody id="andon-table-body">
-                <tr>
+            <!-- Columnas de Completas -->
+            <div class="col-md-4" id="andon-column-completa-1"></div>
+            <div class="col-md-4" id="andon-column-completa-2"></div>
+
+            <!-- Columna de Parciales -->
+            <div class="col-md-4" id="andon-column-parcial">
                     <td colspan="4">
                         <div id="andon-loader" class="andon-loader">Cargando datos...</div>
                     </td>
@@ -92,15 +89,14 @@ $page_title = 'Andon - Estado Pickeo';
             }
 
             return `
-                <tr>
-                    <td class="col-wo">${escapeHtml(wo.workorder)}</td>
-                    <td class="col-np">${escapeHtml(wo.numero_parte)}</td>
-                    <td class="col-desc" title="${escapeHtml(wo.descripcion)}">${escapeHtml(descCorta)}</td>
-                    <td class="col-status ${statusClass}">${escapeHtml(statusText)}</td>
-                </tr>
+                <div class="andon-wo-item">
+                    <div class="andon-wo">${escapeHtml(wo.workorder)}</div>
+                    <div class="andon-np">${escapeHtml(wo.numero_parte)}</div>
+                    <div class="andon-desc" title="${escapeHtml(wo.descripcion)}">${escapeHtml(descCorta)}</div>
+                    <div class="andon-status ${statusClass}">${escapeHtml(statusText)}</div>
+                </div>
             `;
         }
-
         /**
          * Función principal para obtener datos y actualizar la tabla Andon.
          */
@@ -108,7 +104,6 @@ $page_title = 'Andon - Estado Pickeo';
             const url = '../ajax/get_andon_data.php'; // Ruta al script PHP
             const andonTableBody = document.getElementById('andon-table-body');
             const loaderRow = `<tr><td colspan="4"><div class="andon-loader">Actualizando...</div></td></tr>`; // Loader para refresco
-
             // Mostrar loader temporalmente mientras se actualiza
             if (andonTableBody) andonTableBody.innerHTML = loaderRow;
 
