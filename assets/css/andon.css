@@ -1,105 +1,260 @@
-/* assets/css/andon.css - Estilos para Andon tipo Aeropuerto */
+/* assets/css/andon.css - Estilos para Andon tipo Grid 4 Columnas */
+/* Versión: Compacto Horizontal, NP/Desc Agrupados Verticalmente, Estado Inline, Borde por Estado */
+/* Fecha de última revisión: 21 de Abril de 2025 */
+
 body.andon-body {
     background-color: #212529;
     /* Fondo oscuro */
     color: #f8f9fa;
     /* Texto claro */
     font-family: 'Inter', sans-serif;
-    /* Usar la misma fuente */
-    overflow-y: hidden;
-    /* Evitar scroll vertical si es posible */
+    /* O la fuente base de tu app */
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    /* Tamaño base reducido para compacidad */
+    /* Evitar scroll horizontal si el grid se comporta bien */
+    overflow-x: hidden;
+    /* Permitir scroll vertical si hay muchas tarjetas */
+    overflow-y: auto;
+}
+
+.container-fluid {
+    max-width: 98%;
+    /* Usar casi todo el ancho disponible */
+    margin: 0 auto;
 }
 
 .andon-title {
     color: #ffc107;
     /* Color amarillo para título */
     font-weight: bold;
+    font-size: 2.5rem;
+    /* Tamaño del título principal */
     margin-bottom: 1rem;
+    /* Espacio bajo el título reducido */
+    text-transform: uppercase;
+    text-align: center;
+    /* Centrar título */
 }
 
-#andon-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1.8rem;
-    /* Tamaño base grande para tabla */
-    margin-bottom: 0;
-    /* Quitar margen inferior */
+/* Grid Container */
+.andon-grid {
+    display: grid;
+    /* 4 columnas de igual ancho */
+    grid-template-columns: repeat(4, 1fr);
+    /* Espacio entre tarjetas */
+    gap: 0.85rem;
+    /* Ajustar gap si es necesario */
+    padding: 0.5rem 0;
+    /* Padding vertical del contenedor grid */
 }
 
-#andon-table thead th {
+/* Estilos de las Tarjetas Individuales */
+.andon-card {
     background-color: #343a40;
-    /* Encabezado más oscuro */
-    color: #adb5bd;
-    /* Texto cabecera grisáceo */
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 2px solid #495057;
-    font-size: 0.8em;
-    /* Encabezado ligeramente más pequeño */
-    text-transform: uppercase;
+    /* Fondo de tarjeta */
+    /* Borde base: 3px de grosor, color gris oscuro por defecto */
+    /* La clase de estado (.status-parcial, etc.) en esta tarjeta cambiará el border-color */
+    border: 3px solid #495057;
+    border-radius: 6px;
+    /* Bordes redondeados leves */
+    /* Padding interno reducido */
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    /* Usar flexbox para organizar contenido interno */
+    flex-direction: column;
+    /* Elementos internos apilados verticalmente */
+    overflow: hidden;
+    /* Asegurar que contenido interno no desborde la tarjeta redondeada */
+    transition: border-color 0.3s ease;
+    /* Transición suave para el color del borde */
+    /* Sin altura mínima para que se ajusten al contenido */
 }
 
-#andon-table tbody tr {
-    border-bottom: 1px solid #495057;
-    /* Línea divisoria entre filas */
+/* Borde coloreado según el estado de la tarjeta */
+.andon-card.status-parcial {
+    border-color: #ffc107;
+    /* Amarillo */
 }
 
-/* Evitar borde en la última fila */
-#andon-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-
-#andon-table tbody td {
-    padding: 1rem 1rem;
-    /* Espaciado generoso */
-    vertical-align: middle;
-    /* Alinear verticalmente al medio */
-}
-
-/* Estilos específicos por columna */
-#andon-table .col-wo {
-    font-weight: bold;
-    width: 15%;
-    /* Ajustar anchos */
-}
-
-#andon-table .col-np {
-    width: 20%;
-    font-size: 0.9em;
-    color: #adb5bd;
-}
-
-#andon-table .col-desc {
-    width: 45%;
-    font-size: 0.9em;
-}
-
-#andon-table .col-status {
-    width: 20%;
-    font-weight: bold;
-    text-align: center;
-    font-size: 1.2em;
-    text-transform: uppercase;
-}
-
-/* Colores de Estado */
-.status-parcial {
-    color: #ffc107;
-    /* Amarillo/Naranja */
-    /* background-color: rgba(255, 193, 7, 0.1); Borde sutil o fondo si se quiere */
-}
-
-.status-completo {
-    color: #198754;
+.andon-card.status-completo {
+    border-color: #198754;
     /* Verde */
-    /* background-color: rgba(25, 135, 84, 0.1); */
 }
 
-/* Loader */
-#andon-loader {
-    padding: 3rem;
-    text-align: center;
+.andon-card.status-otro {
+    border-color: #6c757d;
+    /* Gris */
+}
+
+
+/* Contenedor para la fila horizontal principal: WO | (NP/Desc) | Status */
+.andon-card__main-info {
+    display: flex;
+    flex-direction: row;
+    /* Alineación horizontal */
+    /* Alinear verticalmente al centro los items de la fila (WO, Bloque NP/Desc, Status) */
+    align-items: center;
+    gap: 0.9rem;
+    /* Espacio entre elementos de la fila */
+    width: 100%;
+    /* Ocupar todo el ancho de la tarjeta */
+    overflow: hidden;
+    /* Evitar que los hijos desborden este contenedor */
+}
+
+/* WO - Texto grande, no se encoge */
+.andon-card__wo {
+    font-size: 2.0rem;
+    /* Tamaño GRANDE para WO (ajusta a tu gusto) */
+    font-weight: bold;
+    color: #ffffff;
+    /* Blanco brillante */
+    flex-shrink: 0;
+    /* Importante: No encoger */
+    white-space: nowrap;
+    /* Mantener en una línea */
+    overflow: hidden;
+    /* Ocultar si excede */
+    text-overflow: ellipsis;
+    /* Mostrar '...' si se corta */
+    line-height: 1.1;
+    /* Ajustar interlineado si es necesario */
+    /* max-width: 150px; */
+    /* Considera limitar ancho */
+}
+
+/* NUEVO: Contenedor para el bloque vertical NP/Desc */
+.andon-card__part-info {
+    display: flex;
+    flex-direction: column;
+    /* Apila NP y Desc */
+    flex-grow: 1;
+    /* Ocupa el espacio disponible en la fila */
+    flex-shrink: 1;
+    /* Permite encogerse si es necesario */
+    overflow: hidden;
+    /* Oculta el contenido que desborde */
+    /* Alinear los textos a la izquierda dentro de este bloque */
+    align-items: flex-start;
+}
+
+/* NP - Dentro del bloque part-info */
+.andon-card__np {
+    font-size: 1.0rem;
+    color: #adb5bd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    /* Espaciado vertical ligero */
+    width: 100%;
+    /* Asegura que use el ancho del contenedor part-info */
+}
+
+/* Desc - Dentro del bloque part-info */
+.andon-card__desc {
+    font-size: 0.9rem;
+    color: #ced4da;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    /* Espaciado vertical ligero */
+    width: 100%;
+    /* Asegura que use el ancho del contenedor part-info */
+}
+
+/* Status - Como badge inline, a la derecha, muy pequeño */
+.andon-card__status {
+    font-size: 0.75rem;
+    /* Texto MUY pequeño */
+    font-weight: bold;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    /* Importante: No encoger */
+    white-space: nowrap;
+    padding: 0 0.2em;
+    /* Pequeño padding horizontal para separar visualmente */
+    margin-left: auto;
+    /* Empuja a la derecha */
+    line-height: 1.1;
+    /* Ajustar para alineación vertical si es necesario */
+    /* El color lo aplica la regla específica de abajo */
+}
+
+/* Colores específicos para el TEXTO del estado */
+/* Usamos selectores más específicos para asegurar que se apliquen */
+.andon-card__main-info>.andon-card__status {
+    color: #adb5bd;
+    /* Color base por si no coincide ninguna clase */
+}
+
+.andon-card.status-parcial .andon-card__status {
+    color: #ffc107;
+    /* Texto Amarillo */
+}
+
+.andon-card.status-completo .andon-card__status {
+    color: #20c997;
+    /* Texto Verde brillante */
+    /* color: #198754; */
+    /* Alternativa: Verde oscuro */
+}
+
+.andon-card.status-otro .andon-card__status {
     color: #6c757d;
+    /* Texto Gris */
+}
+
+
+/* Loader y Mensajes */
+.andon-loader,
+.andon-empty-message,
+.andon-error-message {
+    /* Ocupar todo el grid si son el único elemento */
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    /* Padding reducido */
     font-size: 1.5rem;
+    /* Tamaño reducido */
+    color: #6c757d;
+    /* Color grisáceo */
+}
+
+.andon-error-message {
+    color: #dc3545;
+    /* Color rojo para errores */
+    font-weight: bold;
+    white-space: normal;
+    /* Permitir que mensajes de error largos se ajusten */
+}
+
+
+
+
+@media (max-width: 576px) {
+    .andon-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .andon-card__wo {
+        font-size: 1.5rem;
+    }
+
+    .andon-card__np {
+        font-size: 0.9rem;
+    }
+
+    /* Si .part-info no está oculto */
+    .andon-card__status {
+        font-size: 0.7rem;
+    }
+
+    .andon-title {
+        font-size: 2rem;
+    }
 }
