@@ -39,13 +39,11 @@ include_once('../layouts/header.php');
 
             <div class="card">
                 <div class="card-header">
-                     {/* CAMBIO: Título y subtítulo actualizados */}
                     <h5 class="card-title mb-0">Historial Completo de Entregas</h5>
                     <h6 class="card-subtitle text-muted pt-1">Lista de todas las Work Orders marcadas como entregadas a producción.</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        {/* La ID de la tabla se mantiene, pero ahora muestra historial */}
                         <table id="tabla-entregas-hoy" class="table table-striped table-hover" style="width:100%">
                             <thead>
                                 <tr>
