@@ -1283,6 +1283,6 @@ function buscar_historial_todas_las_entregas() {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (\PDOException $e) {
         error_log("Error en buscar_historial_todas_las_entregas (SQL): " . $e->getMessage());
-        return false; // Indicar fallo
+        return false;
     }
 }
