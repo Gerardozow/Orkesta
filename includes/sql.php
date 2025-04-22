@@ -1256,3 +1256,33 @@ function buscar_wos_entregadas_hoy() {
         return false; // Indicar fallo
     }
 }
+
+/**
+ * Busca TODO el historial de WOs marcadas como entregadas a producción.
+ * @return array Lista de registros de historial de entrega ordenados por fecha descendente, o array vacío/false en error.
+ */
+function buscar_historial_todas_las_entregas() {
+    global $db;
+    // La consulta es igual a la anterior, PERO SIN el filtro de fecha (AND DATE(h.fecha_accion) = CURDATE())
+    $sql = "SELECT
+                h.workorder,
+                w.numero_parte,
+                w.descripcion,
+                h.fecha_accion AS fecha_entrega,
+                h.id_usuario_accion,
+                CONCAT(u.nombre, ' ', u.apellido) AS nombre_usuario_entrega
+            FROM workorder_historial h
+            JOIN workorders w ON h.workorder = w.workorder
+            LEFT JOIN usuarios u ON h.id_usuario_accion = u.id
+            WHERE h.tipo_accion = 'ENTREGADO_PRODUCCION'
+            ORDER BY h.fecha_accion DESC"; // Ordenar por fecha descendente (más reciente primero)
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        // Devuelve un array asociativo
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\PDOException $e) {
+        error_log("Error en buscar_historial_todas_las_entregas (SQL): " . $e->getMessage());
+        return false; // Indicar fallo
+    }
+}
