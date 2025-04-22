@@ -35,8 +35,6 @@ include_once('../layouts/header.php');
 
             <h1 class="h3 mb-3"><strong><?php echo htmlspecialchars($page_title); ?></strong></h1>
 
-            <?php /* Mostrar mensajes de sesión si existen (opcional) */ ?>
-            <?php echo mostrar_mensaje(leer_mensaje_sesion()); ?>
 
             <div class="card">
                 <div class="card-header">
