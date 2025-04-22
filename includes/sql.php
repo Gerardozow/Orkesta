@@ -1216,3 +1216,43 @@ function contar_wos_parciales()
         return 0;
     }
 }
+
+function buscar_wos_entregadas_hoy() {
+    global $db;
+    $sql = "SELECT
+                h.workorder,
+                w.numero_parte,
+                w.descripcion,
+                h.fecha_accion AS fecha_entrega,
+                h.id_usuario_accion,
+                CONCAT(u.nombre, ' ', u.apellido) AS nombre_usuario_entrega
+            FROM workorder_historial h
+            JOIN workorders w ON h.workorder = w.workorder
+            LEFT JOIN usuarios u ON h.id_usuario_accion = u.id
+            WHERE h.tipo_accion = 'ENTREGADO_PRODUCCION'
+              AND DATE(h.fecha_accion) = CURDATE()
+            ORDER BY h.fecha_accion DESC";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC); // Usar FETCH_ASSOC para nombres de columna
+
+        // Opcional: Asegurar que 'nombre_usuario_entrega' exista aunque sea null
+        // La lógica de renderizado JS ya maneja bien los nulls, pero esto es por si acaso
+        foreach ($results as $key => $row) {
+             if ($row['id_usuario_accion'] && !isset($row['nombre_usuario_entrega'])) {
+                // Puede pasar si el usuario se borró y CONCAT devuelve NULL
+                // El JS lo maneja, pero podemos ser explícitos aquí si queremos
+                // $results[$key]['nombre_usuario_entrega'] = "Usuario Borrado";
+             } elseif (!$row['id_usuario_accion']) {
+                // Acción de sistema
+                // $results[$key]['nombre_usuario_entrega'] = "Sistema";
+             }
+        }
+        return $results; // Devolver array de resultados
+
+    } catch (\PDOException $e) {
+        error_log("Error en buscar_wos_entregadas_hoy (SQL): " . $e->getMessage());
+        return false; // Indicar fallo
+    }
+}
