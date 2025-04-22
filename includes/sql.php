@@ -1286,3 +1286,34 @@ function buscar_historial_todas_las_entregas() {
         return false;
     }
 }
+
+/**
+ * Cuenta la cantidad de Work Orders distintas marcadas como PICKEO_COMPLETO
+ * por cada usuario que realizó la acción.
+ *
+ * @return array Lista de usuarios con su conteo total de pickeos completados, ordenados descendentemente, o false en error.
+ */
+function contar_pickeos_completos_por_usuario() {
+    global $db;
+    // Selecciona el nombre del usuario y cuenta las WOs distintas que marcó como completas
+    // Se une con usuarios para obtener el nombre y se filtra por el tipo de acción correcto.
+    // Se excluyen acciones sin ID de usuario (id_usuario_accion IS NOT NULL).
+    $sql = "SELECT
+                CONCAT(u.nombre, ' ', u.apellido) AS nombre_usuario,
+                COUNT(DISTINCT h.workorder) AS total_pickeos
+            FROM workorder_historial h
+            JOIN usuarios u ON h.id_usuario_accion = u.id
+            WHERE h.tipo_accion = 'PICKEO_COMPLETO' -- Asegúrate que este sea el tipo de acción correcto
+              AND h.id_usuario_accion IS NOT NULL
+            GROUP BY h.id_usuario_accion, nombre_usuario -- Agrupar por ID y Nombre
+            ORDER BY total_pickeos DESC, nombre_usuario ASC"; // Ordenar por total y luego nombre
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Devolver array asociativo
+    } catch (\PDOException $e) {
+        error_log("Error en contar_pickeos_completos_por_usuario (SQL): " . $e->getMessage());
+        return 0; // Indicar fallo
+    }
+}
+
