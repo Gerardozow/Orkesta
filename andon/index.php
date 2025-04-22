@@ -109,7 +109,7 @@ $page_title = 'Andon - Estado Pickeo';
                         <div class="andon-card__wo" title="Work Order: ${escapeHtml(wo.workorder)}">${escapeHtml(wo.workorder)}</div>
                         <div class="andon-card__part-info">
                             <div class="andon-card__np" title="Num. Parte: ${escapeHtml(wo.numero_parte)}">${escapeHtml(npCorto)}</div>
-                            <div class="andon-card__desc" title="Descripción: ${escapeHtml(wo.descripcion)}">${escapeHtml(descCorta)}</div>
+                            <div class="andon-card__desc" title="Descripción: ${wo.descripcion}">${descCorta}</div>
                         </div>
                         <div class="andon-card__status">${escapeHtml(statusText)}</div>
                     </div>
